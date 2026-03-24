@@ -54,18 +54,11 @@ export default [
       },
     },
     rules: {
-      // Prettier manda na formatação
       'prettier/prettier': 'warn',
-
-      // React / Expo
       'react/react-in-jsx-scope': 'off',
       'react/prop-types': 'off',
-
-      // React Native
       'react-native/no-inline-styles': 'off',
       'react-native/split-platform-components': 'off',
-
-      // TypeScript
       'no-unused-vars': 'off',
       '@typescript-eslint/no-unused-vars': ['error'],
     },
