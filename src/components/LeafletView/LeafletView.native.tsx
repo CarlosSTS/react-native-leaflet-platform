@@ -87,7 +87,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   );
 
   const sendInitialMessage = useCallback(() => {
-    let startupMessage: MapMessage = {};
+    const startupMessage: MapMessage = {};
 
     if (mapLayers) {
       startupMessage.mapLayers = mapLayers;

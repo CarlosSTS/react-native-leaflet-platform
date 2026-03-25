@@ -89,13 +89,6 @@ export interface MapMarker extends BaseMarker {
   id: string;
 }
 
-export interface MapEventMessage {
-  event?: any;
-  msg?: string;
-  error?: string;
-  payload?: any;
-}
-
 export interface MapLayer {
   attribution?: string;
   attributionPrefix?: string;
@@ -148,7 +141,7 @@ export interface WebviewLeafletMessagePayload {
 }
 
 export interface WebviewLeafletMessage {
-  event?: any;
+  event?: string;
   msg?: string;
   error?: string;
   payload?: WebviewLeafletMessagePayload;
