@@ -8,11 +8,6 @@ export interface LatLngBounds {
   northEast: LatLng;
 }
 
-export interface Point {
-  x: number;
-  y: number;
-}
-
 export interface DivIcon {
   html?: string;
   className?: string;

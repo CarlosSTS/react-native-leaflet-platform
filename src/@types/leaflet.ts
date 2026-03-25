@@ -1,6 +1,6 @@
-import { DivIcon, LatLng, LatLngBounds, LatLngExpression, Point } from './map';
+import { DivIcon, LatLng, LatLngBounds, LatLngExpression } from './map';
 
-export const OWN_POSTION_MARKER_ID = 'OWN_POSTION_MARKER_ID';
+export const OWN_POSITION_MARKER_ID = 'OWN_POSITION_MARKER_ID';
 
 export enum WebViewLeafletEvents {
   MAP_COMPONENT_MOUNTED = 'MAP_COMPONENT_MOUNTED',
@@ -66,20 +66,27 @@ export interface MapMarkerAnimation {
   iterationCount?: number | typeof INFINITE_ANIMATION_ITERATIONS;
 }
 
-export interface MapMarker {
+export interface BaseMarker {
   animation?: MapMarkerAnimation;
   position: LatLng;
   divIcon?: DivIcon;
-  icon: any;
-  iconAnchor?: Point;
-  id?: string;
-  size?: Point;
+  icon: string;
+  iconAnchor?: [number, number];
+  size: [number, number];
+
   title?: string;
   iconStyle?: string;
   titleStyle?: string;
   tooltipStyle?: string;
   tooltipTipStyle?: string;
   closeButtonStyle?: string;
+  closeButton?: boolean;
+  closeOnClick?: boolean;
+  autoClose?: boolean;
+}
+
+export interface MapMarker extends BaseMarker {
+  id: string;
 }
 
 export interface MapEventMessage {
@@ -147,16 +154,6 @@ export interface WebviewLeafletMessage {
   payload?: WebviewLeafletMessagePayload;
 }
 
-export interface OwnPositionMarker {
-  animation?: MapMarkerAnimation;
+export interface OwnPositionMarker extends BaseMarker {
   id?: string;
-  icon: string;
-  position: LatLng;
-  size: Point;
-  title: string;
-  iconStyle?: string;
-  titleStyle?: string;
-  tooltipStyle?: string;
-  tooltipTipStyle?: string;
-  closeButtonStyle?: string;
 }

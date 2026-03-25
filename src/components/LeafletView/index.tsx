@@ -8,7 +8,7 @@ import {
   MapLayer,
   MapShape,
   OwnPositionMarker,
-  OWN_POSTION_MARKER_ID,
+  OWN_POSITION_MARKER_ID,
 } from '~/@types/leaflet';
 
 import { Platform, StyleSheet } from 'react-native';
@@ -104,7 +104,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
     if (ownPositionMarker) {
       startupMessage.ownPositionMarker = {
         ...ownPositionMarker,
-        id: OWN_POSTION_MARKER_ID,
+        id: OWN_POSITION_MARKER_ID,
       };
     }
     startupMessage.zoom = zoom;
@@ -195,7 +195,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
       return;
     }
     sendMessage({
-      ownPositionMarker: { ...ownPositionMarker, id: OWN_POSTION_MARKER_ID },
+      ownPositionMarker: { ...ownPositionMarker, id: OWN_POSITION_MARKER_ID },
     });
   }, [initialized, ownPositionMarker, sendMessage]);
 
