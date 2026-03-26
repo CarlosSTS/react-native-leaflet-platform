@@ -1,10 +1,9 @@
 import { StyleSheet } from 'react-native';
-import { colors } from '../../global';
 
 const styles = StyleSheet.create({
   activityOverlayStyle: {
     ...StyleSheet.absoluteFill,
-    backgroundColor: colors.loadingIndicator.background,
+    backgroundColor: 'rgba(255, 255, 255, .5)',
     display: 'flex',
     justifyContent: 'center',
     alignContent: 'center',
@@ -15,7 +14,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderRadius: 50,
     alignSelf: 'center',
-    shadowColor: colors.loadingIndicator.shadowColor,
+    shadowColor: '#000000',
     shadowOffset: {
       width: 0,
       height: 3,
