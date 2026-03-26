@@ -1,97 +1,192 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# react-native-leaflet-platform
 
-# Getting Started
+## Platform Screenshots
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+<table>
+  <tr>
+    <td align="center">
+      <img src="https://res.cloudinary.com/dbw8igay3/image/upload/ios_s7wm58.png" alt="iOS Screenshot" width="350" />
+    </td>
+    <td align="center">
+      <img src="https://res.cloudinary.com/dbw8igay3/image/upload/android_bdwkku.png" alt="Android Screenshot" width="440" />
+    </td>
+     <td align="center">
+      <img src="https://res.cloudinary.com/dbw8igay3/image/upload/5628890f-65e7-4888-9ea1-9ad9a6d84fd8.png" alt="Web Screenshot" width="1340" />
+    </td>
+  </tr>
+</table>
 
-## Step 1: Start Metro
+A React Native library for interactive maps using Leaflet, compatible with **Android**, **iOS**, **Web**, and **Expo**.
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+> Based on [react-native-leaflet](https://github.com/pavel-corsaghin/react-native-leaflet).
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Installation
 
-```sh
-# Using npm
-npm start
-
-# OR using Yarn
-yarn start
-```
-
-## Step 2: Build and run your app
-
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
-
-### Android
-
-```sh
-# Using npm
-npm run android
-
-# OR using Yarn
-yarn android
-```
-
-### iOS
-
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
-
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
+Add to your React Native project:
 
 ```sh
-bundle install
+npm install @carlossts/react-native-leaflet-platform
+# or
+yarn add @carlossts/react-native-leaflet-platform
 ```
 
-Then, and every time you update your native dependencies, run:
+### Web HTML Asset Setup
+
+To use this library on **Web** (either with Expo Web or React Native Web), you must run the following script after installing dependencies:
 
 ```sh
-bundle exec pod install
+npm run copy-leaflet-html-web
+# or
+yarn copy-leaflet-html-web
 ```
 
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+This will copy the required `leaflet.html` file to the correct location for your web build. This step is necessary to avoid file duplication and to keep the library bundle size small. Always run this script after installing or updating the library.
+
+### Additional dependencies
+
+- **Android/iOS:**
+  - `react-native-webview`
+  - Follow React Native linking instructions for each platform
+    > - [react-native-webview](https://github.com/react-native-webview/react-native-webview)
+
+- **Web:**
+  - `react-native-web`
+  - `webpack` or another bundler
+
+## Expo Support
+
+For Expo projects, you must install the following dependencies:
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+npx expo install react-native-webview expo-asset expo-file-system
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+> - [react-native-webview](https://docs.expo.dev/versions/latest/sdk/webview/)
+> - [expo-asset](https://docs.expo.dev/versions/latest/sdk/asset/)
+> - [expo-file-system](https://docs.expo.dev/versions/latest/sdk/filesystem/)
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
+You must also copy the required HTML file:
 
-## Step 3: Modify your app
+```sh
+cp node_modules/react-native-leaflet-platform/android/src/main/assets/leaflet.html assets
+```
 
-Now that you have successfully run the app, let's make changes!
+## Usage with react-native-cli
 
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
+```js
+import React from 'react';
+import { LeafletView } from 'react-native-leaflet-view';
 
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
+const DEFAULT_LOCATION = {
+  latitude: -23.5489,
+  longitude: -46.6388
+}
+const App: React.FC = () => {
 
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
+  return (
+    <LeafletView
+      mapCenterPosition={{
+        lat: DEFAULT_LOCATION.latitude,
+        lng: DEFAULT_LOCATION.longitude,
+      }}
+    />
+  );
+}
 
-## Congratulations! :tada:
+export default App;
+```
 
-You've successfully run and modified your React Native App. :partying_face:
+## Usage with Expo
 
-### Now what?
+```js
+import React, { useEffect, useState } from 'react';
+import { ActivityIndicator, Alert } from 'react-native';
+import { Asset } from "expo-asset";
+import { File } from 'expo-file-system';
+import { LatLng, LeafletView } from 'react-native-leaflet-view';
 
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
+const DEFAULT_LOCATION = {
+  latitude: -23.5489,
+  longitude: -46.6388
+}
+const App: React.FC = () => {
+  const [webViewContent, setWebViewContent] = useState<string | null>(null);
+  useEffect(() => {
+    let isMounted = true;
 
-# Troubleshooting
+    const loadHtml = async () => {
+      try {
+        const path = require("./assets/leaflet.html");
+        const asset = Asset.fromModule(path);
+        await asset.downloadAsync();
+        const htmlContent = await new File(asset.localUri!).text();
 
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
+        if (isMounted) {
+          setWebViewContent(htmlContent);
+        }
+      } catch (error) {
+        Alert.alert('Error loading HTML', JSON.stringify(error));
+        console.error('Error loading HTML:', error);
+      }
+    };
 
-# Learn More
+    loadHtml();
 
-To learn more about React Native, take a look at the following resources:
+    return () => {
+      isMounted = false;
+    };
+  }, []);
 
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+  if (!webViewContent) {
+    return <ActivityIndicator size="large" />
+  }
+  return (
+    <LeafletView
+      source={{ html: webViewContent }}
+      mapCenterPosition={{
+        lat: DEFAULT_LOCATION.latitude,
+        lng: DEFAULT_LOCATION.longitude,
+      }}
+    />
+  );
+}
+
+export default App;
+```
+
+## Supported Platforms
+
+- [x] Android
+- [x] iOS
+- [x] Web
+- [x] Expo
+
+## Props
+
+| Property            | Required | Type                       | Purpose                                                                 |
+| ------------------- | -------- | -------------------------- | ----------------------------------------------------------------------- |
+| loadingIndicator    | optional | React.ReactElement         | Custom component displayed while the map is loading                     |
+| onError             | optional | function                   | Receives an error event                                                 |
+| onLoadEnd           | optional | function                   | Called when map stops loading                                           |
+| onLoadStart         | optional | function                   | Called when the map starts to load                                      |
+| onMessageReceived   | optional | function                   | Receives messages as WebviewLeafletMessage objects from the map         |
+| mapLayers           | optional | MapLayer array             | An array of map layers                                                  |
+| mapMarkers          | optional | MapMarker array            | An array of map markers                                                 |
+| mapShapes           | optional | MapShape[]                 | An array of map shapes                                                  |
+| mapCenterPosition   | optional | {lat: number, lng: number} | The center position of the map                                          |
+| ownPositionMarker   | optional | Marker                     | A special marker with ID OWN_POSITION_MARKER_ID                         |
+| zoom                | optional | number                     | Desired zoom value of the map. Max is 19. Min is 1.                     |
+| doDebug             | optional | boolean                    | Flag for debug message logging                                          |
+| source              | optional | WebView["source"]          | Loads static html or a uri (with optional headers) in the WebView       |
+| zoomControl         | optional | boolean                    | Controls the visibility of the zoom controls on the map                 |
+| attributionControl  | optional | boolean                    | Controls the visibility of the attribution control on the map           |
+| useMarkerClustering | optional | boolean                    | Enables or disables marker clustering functionality. Default is `true`. |
+
+## Credits
+
+- Based on [react-native-leaflet](https://github.com/pavel-corsaghin/react-native-leaflet)
+- Uses [Leaflet](https://leafletjs.com/) for map rendering
+
+## License
+
+MIT
