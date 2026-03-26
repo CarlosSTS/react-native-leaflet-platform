@@ -43,8 +43,8 @@ interface LeafletViewProps {
 const LeafletView: React.FC<LeafletViewProps> = ({
   onMessageReceived,
   mapLayers = DEFAULT_MAP_LAYERS,
-  mapMarkers,
-  mapShapes,
+  mapMarkers = [],
+  mapShapes = [],
   mapCenterPosition,
   ownPositionMarker,
   zoom = DEFAULT_ZOOM,
@@ -126,7 +126,7 @@ const LeafletView: React.FC<LeafletViewProps> = ({
   useEffect(() => {
     const handleMessage = (event: MessageEvent) => {
       const data = event.data;
-
+      console.log('Received message from iframe:', data);
       if (!data || typeof data !== 'string') {
         return;
       }
