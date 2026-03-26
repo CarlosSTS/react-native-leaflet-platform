@@ -9,8 +9,7 @@ import {
   OwnPositionMarker,
   OWN_POSITION_MARKER_ID,
 } from '../../@types/leaflet';
-
-import { LatLngExpression } from '../../@types/map';
+import { LatLng } from '../../@types/map';
 
 const DEFAULT_MAP_LAYERS: MapLayer[] = [
   {
@@ -29,7 +28,7 @@ interface LeafletViewProps {
   mapLayers?: MapLayer[];
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
-  mapCenterPosition?: LatLngExpression;
+  mapCenterPosition?: LatLng;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   doDebug?: boolean;

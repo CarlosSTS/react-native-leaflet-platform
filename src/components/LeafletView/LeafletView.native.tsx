@@ -14,7 +14,7 @@ import {
 import { Platform, StyleSheet } from 'react-native';
 import { WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes';
 import { LoadingIndicator } from '../LoadingIndicator';
-import { LatLngExpression } from '../../@types/map';
+import { LatLng } from '../../@types/map';
 
 const LEAFLET_HTML_SOURCE = Platform.select({
   ios: require('../../../android/app/src/main/assets/leaflet.html'),
@@ -38,7 +38,7 @@ interface LeafletViewProps extends Omit<WebViewProps, 'onMessage'> {
   mapLayers?: MapLayer[];
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
-  mapCenterPosition?: LatLngExpression;
+  mapCenterPosition?: LatLng;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   doDebug?: boolean;
