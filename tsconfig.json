@@ -13,6 +13,11 @@
       "~/*": ["./src/*"]
     }
   },
-  "include": ["src/**/*.ts", "src/**/*.tsx", "example/**/*.ts", "example/**/*.tsx"],
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.tsx",
+    "example/**/*.ts",
+    "example/**/*.tsx"
+  ],
   "exclude": ["**/node_modules"]
 }
