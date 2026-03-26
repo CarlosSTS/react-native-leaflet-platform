@@ -1,58 +1,61 @@
 {
-  "name": "react-native-leaflet-platform",
+  "name": "@carlossts/react-native-leaflet-platform",
   "version": "1.0.0",
-  "private": true,
+  "publishConfig": {
+    "access": "public"
+  },
+  "description": "A React Native library for interactive maps using Leaflet, compatible with Android, iOS, Web, and Expo.",
+  "main": "lib/index.js",
+  "module": "lib/index.js",
+  "types": "lib/index.d.ts",
+  "react-native": "src/index.ts",
+  "source": "src/index.ts",
+  "files": [
+    "lib/",
+    "src/",
+    "android/app/src/main/assets/leaflet.html",
+    "scripts/"
+  ],
+  "keywords": [
+    "react-native",
+    "leaflet",
+    "map",
+    "expo",
+    "react-native-web",
+    "webview"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/carlossts/react-native-leaflet-platform"
+  },
+  "author": "Carlos Ferreira",
+  "license": "MIT",
   "scripts": {
-    "android": "react-native run-android",
-    "ios": "react-native run-ios",
-    "web": "webpack serve --mode development --open",
-    "lint": "eslint .",
-    "start": "react-native start",
-    "test": "jest",
+    "build": "tsc -p tsconfig.build.json",
+    "prepublishOnly": "yarn build",
     "copy-leaflet-html-web": "sh scripts/copy-leaflet-html.sh"
   },
-  "dependencies": {
-    "@react-native/new-app-screen": "0.84.1",
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
-    "react-native": "0.84.1",
-    "react-native-safe-area-context": "5.5.2",
-    "react-native-web": "0.21.2",
-    "react-native-webview": "13.16.1"
+  "peerDependencies": {
+    "react": ">=18.0.0",
+    "react-native": ">=0.72.0",
+    "react-native-webview": ">=13.0.0",
+    "react-native-web": ">=0.19.0"
+  },
+  "peerDependenciesMeta": {
+    "react-native-webview": {
+      "optional": true
+    },
+    "react-native-web": {
+      "optional": true
+    }
   },
   "devDependencies": {
-    "@babel/core": "7.25.2",
-    "@babel/preset-env": "7.25.3",
-    "@babel/runtime": "7.25.0",
-    "@eslint/js": "9.39.2",
-    "@react-native-community/cli": "20.1.0",
-    "@react-native-community/cli-platform-android": "20.1.0",
-    "@react-native-community/cli-platform-ios": "20.1.0",
-    "@react-native/babel-preset": "0.84.1",
-    "@react-native/metro-config": "0.84.1",
-    "@react-native/typescript-config": "0.84.1",
-    "@types/jest": "29.5.13",
-    "@types/node": "25.5.0",
     "@types/react": "19.2.0",
-    "@types/react-test-renderer": "19.1.0",
-    "@typescript-eslint/eslint-plugin": "8.53.1",
-    "@typescript-eslint/parser": "8.53.1",
-    "babel-loader": "10.1.1",
-    "babel-plugin-module-resolver": "5.0.3",
-    "eslint": "9.39.2",
-    "eslint-config-prettier": "10.1.8",
-    "eslint-plugin-prettier": "5.5.5",
-    "eslint-plugin-react": "7.37.5",
-    "eslint-plugin-react-hooks": "7.0.1",
-    "eslint-plugin-react-native": "5.0.0",
-    "html-webpack-plugin": "5.6.6",
-    "jest": "29.6.3",
-    "prettier": "3.8.0",
-    "react-test-renderer": "19.2.3",
-    "typescript": "5.8.3",
-    "webpack": "5.105.4",
-    "webpack-cli": "7.0.2",
-    "webpack-dev-server": "5.2.3"
+    "react": "19.2.4",
+    "react-native": "0.84.1",
+    "react-native-web": "0.21.2",
+    "react-native-webview": "13.16.1",
+    "typescript": "5.8.3"
   },
   "engines": {
     "node": ">= 22.11.0"

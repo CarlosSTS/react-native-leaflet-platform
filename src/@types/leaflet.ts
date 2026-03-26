@@ -1,4 +1,4 @@
-import { DivIcon, LatLng, LatLngBounds, LatLngExpression } from './map';
+import { DivIcon, LatLng, LatLngBounds } from './map';
 
 export const OWN_POSITION_MARKER_ID = 'OWN_POSITION_MARKER_ID';
 
@@ -124,7 +124,7 @@ export interface MapMessage {
   mapLayers?: MapLayer[];
   mapMarkers?: MapMarker[];
   mapShapes?: MapShape[];
-  mapCenterPosition?: LatLngExpression;
+  mapCenterPosition?: LatLng;
   ownPositionMarker?: OwnPositionMarker;
   zoom?: number;
   useMarkerClustering?: boolean;

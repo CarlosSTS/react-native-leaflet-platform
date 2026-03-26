@@ -1,14 +1,16 @@
 #!/bin/sh
+# Copies leaflet.html from @carlossts/react-native-leaflet-platform into the
+# consumer project's public/ directory (required for web/iframe rendering).
 
-SRC="android/app/src/main/assets/leaflet.html"
-DEST_DIR="public"
-DEST="$DEST_DIR/leaflet.html"
+SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+LEAFLET_HTML="$SCRIPT_DIR/../android/app/src/main/assets/leaflet.html"
+DEST="$(pwd)/public"
 
-mkdir -p "$DEST_DIR"
-
-if [ -f "$SRC" ]; then
-  cp "$SRC" "$DEST"
-  echo "leaflet.html copied to $DEST_DIR/"
-else
-  echo "File leaflet.html not found in $SRC."
+if [ ! -f "$LEAFLET_HTML" ]; then
+  echo "Error: leaflet.html not found at $LEAFLET_HTML"
+  exit 1
 fi
+
+mkdir -p "$DEST"
+cp "$LEAFLET_HTML" "$DEST/leaflet.html"
+echo "leaflet.html copied to $DEST/leaflet.html"

@@ -12,5 +12,3 @@ export interface DivIcon {
   html?: string;
   className?: string;
 }
-
-export type LatLngExpression = LatLng | [number, number];

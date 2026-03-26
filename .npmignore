@@ -2,6 +2,7 @@
 node_modules
 npm-debug.log*
 yarn-error.log*
+yarn.lock
 
 # OS/editor artifacts
 .DS_Store
@@ -18,8 +19,30 @@ yarn-error.log*
 # React Native local/build artifacts
 android/local.properties
 android/app/debug.keystore
-ios/Pods
+ios/
+
+# Android (except leaflet.html asset, included via files field)
+android/build.gradle
+android/gradle.properties
+android/gradlew
+android/gradlew.bat
+android/settings.gradle
+android/app/build.gradle
+android/app/proguard-rules.pro
+android/app/src/main/java/
+android/app/src/main/res/
+android/app/src/main/AndroidManifest.xml
+android/gradle/
 
 # Test and coverage
 coverage
 __tests__
+
+# Examples
+example
+
+# Config files not needed in package
+tsconfig.json
+tsconfig.build.json
+*.tgz
+public/

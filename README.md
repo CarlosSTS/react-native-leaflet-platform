@@ -22,170 +22,110 @@ A React Native library for interactive maps using Leaflet, compatible with **And
 
 ## Installation
 
-Add to your React Native project:
-
 ```sh
 npm install @carlossts/react-native-leaflet-platform
 # or
 yarn add @carlossts/react-native-leaflet-platform
 ```
 
-### Web HTML Asset Setup
-
-To use this library on **Web** (either with Expo Web or React Native Web), you must run the following script after installing dependencies:
-
-```sh
-npm run copy-leaflet-html-web
-# or
-yarn copy-leaflet-html-web
-```
-
-This will copy the required `leaflet.html` file to the correct location for your web build. This step is necessary to avoid file duplication and to keep the library bundle size small. Always run this script after installing or updating the library.
-
 ### Additional dependencies
 
-- **Android/iOS:**
-  - `react-native-webview`
-  - Follow React Native linking instructions for each platform
-    > - [react-native-webview](https://github.com/react-native-webview/react-native-webview)
+- **Android/iOS (React Native CLI):**
+  - [`react-native-webview`](https://github.com/react-native-webview/react-native-webview)
 
-- **Web:**
-  - `react-native-web`
-  - `webpack` or another bundler
+- **Expo:**
 
-## Expo Support
+  ```sh
+  npx expo install react-native-webview expo-asset expo-file-system
+  ```
 
-For Expo projects, you must install the following dependencies:
+  Copy the HTML asset:
 
-```sh
-npx expo install react-native-webview expo-asset expo-file-system
-```
+  ```sh
+  cp node_modules/@carlossts/react-native-leaflet-platform/android/app/src/main/assets/leaflet.html assets
+  ```
 
-> - [react-native-webview](https://docs.expo.dev/versions/latest/sdk/webview/)
-> - [expo-asset](https://docs.expo.dev/versions/latest/sdk/asset/)
-> - [expo-file-system](https://docs.expo.dev/versions/latest/sdk/filesystem/)
+- **Web (Expo Web or React Native Web):**
+  - [`react-native-web`](https://github.com/nicolecarlosleahy/react-native-web)
 
-You must also copy the required HTML file:
+  Add to your `package.json` scripts and run:
 
-```sh
-cp node_modules/@carlossts/react-native-leaflet-platform/android/app/src/main/assets/leaflet.html assets
-```
-
-## Usage with react-native-cli
-
-```js
-import React from 'react';
-import { LeafletView } from '@carlossts/react-native-leaflet-platform';
-
-const DEFAULT_LOCATION = {
-  latitude: -23.5489,
-  longitude: -46.6388
-}
-const App: React.FC = () => {
-
-  return (
-    <LeafletView
-      mapCenterPosition={{
-        lat: DEFAULT_LOCATION.latitude,
-        lng: DEFAULT_LOCATION.longitude,
-      }}
-    />
-  );
-}
-
-export default App;
-```
-
-## Usage with Expo
-
-```js
-import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Alert } from 'react-native';
-import { Asset } from "expo-asset";
-import { File } from 'expo-file-system';
-import { LeafletView } from '@carlossts/react-native-leaflet-platform';
-
-const DEFAULT_LOCATION = {
-  latitude: -23.5489,
-  longitude: -46.6388
-}
-const App: React.FC = () => {
-  const [webViewContent, setWebViewContent] = useState<string | null>(null);
-  useEffect(() => {
-    let isMounted = true;
-
-    const loadHtml = async () => {
-      try {
-        const path = require("./assets/leaflet.html");
-        const asset = Asset.fromModule(path);
-        await asset.downloadAsync();
-        const htmlContent = await new File(asset.localUri!).text();
-
-        if (isMounted) {
-          setWebViewContent(htmlContent);
-        }
-      } catch (error) {
-        Alert.alert('Error loading HTML', JSON.stringify(error));
-        console.error('Error loading HTML:', error);
-      }
-    };
-
-    loadHtml();
-
-    return () => {
-      isMounted = false;
-    };
-  }, []);
-
-  if (!webViewContent) {
-    return <ActivityIndicator size="large" />
+  ```json
+  {
+    "scripts": {
+      "copy-leaflet-html-web": "sh node_modules/@carlossts/react-native-leaflet-platform/scripts/copy-leaflet-html.sh"
+    }
   }
-  return (
-    <LeafletView
-      source={{ html: webViewContent }}
-      mapCenterPosition={{
-        lat: DEFAULT_LOCATION.latitude,
-        lng: DEFAULT_LOCATION.longitude,
-      }}
-    />
-  );
-}
+  ```
 
-export default App;
-```
+  ```sh
+  npm run copy-leaflet-html-web
+  ```
+
+  This copies `leaflet.html` to your project's `public/` directory.
+
+## Examples
+
+Usage examples for each platform are available in the [`example/`](example/) folder:
+
+| Platform           | Example                                                        |
+| ------------------ | -------------------------------------------------------------- |
+| React Native CLI   | [`example/react-native/App.tsx`](example/react-native/App.tsx) |
+| Expo (Android/iOS) | [`example/expo/App.tsx`](example/expo/App.tsx)                 |
+| Expo + Web         | [`example/expo-web/App.tsx`](example/expo-web/App.tsx)         |
 
 ## Supported Platforms
 
-- [x] Android
-- [x] iOS
-- [x] Web
-- [x] Expo
+| Platform         | Support | Min Version                                           |
+| ---------------- | ------- | ----------------------------------------------------- |
+| Android          | ✅      | API 24 (Android 7.0)                                  |
+| iOS              | ✅      | iOS 13.0                                              |
+| Web              | ✅      | Modern browsers (Chrome 80+, Firefox 75+, Safari 13+) |
+| Expo (managed)   | ✅      | SDK 50+                                               |
+| Expo (bare)      | ✅      | SDK 50+                                               |
+| React Native CLI | ✅      | RN 0.72+                                              |
+
+## Requirements
+
+| Dependency           | Min Version | Notes                                           |
+| -------------------- | ----------- | ----------------------------------------------- |
+| React                | 18.0.0      | Peer dependency                                 |
+| React Native         | 0.72.0      | Peer dependency                                 |
+| react-native-webview | 13.0.0      | Required for Android/iOS; optional for web-only |
+| react-native-web     | 0.19.0      | Required for web; optional for native-only      |
+| Node.js              | 22.11.0+    | Build/dev only                                  |
+
+> **iOS note:** Apple does not allow alternative browser engines on iOS. The map runs inside a native `WKWebView` via `react-native-webview`. There is no pure web/CSS fallback on iOS — behavior depends on the WebKit engine bundled with the OS version.
 
 ## Props
 
-| Property            | Required | Type                       | Purpose                                                                 |
-| ------------------- | -------- | -------------------------- | ----------------------------------------------------------------------- |
-| loadingIndicator    | optional | React.ReactElement         | Custom component displayed while the map is loading                     |
-| onError             | optional | function                   | Receives an error event                                                 |
-| onLoadEnd           | optional | function                   | Called when map stops loading                                           |
-| onLoadStart         | optional | function                   | Called when the map starts to load                                      |
-| onMessageReceived   | optional | function                   | Receives messages as WebviewLeafletMessage objects from the map         |
-| mapLayers           | optional | MapLayer array             | An array of map layers                                                  |
-| mapMarkers          | optional | MapMarker array            | An array of map markers                                                 |
-| mapShapes           | optional | MapShape[]                 | An array of map shapes                                                  |
-| mapCenterPosition   | optional | {lat: number, lng: number} | The center position of the map                                          |
-| ownPositionMarker   | optional | Marker                     | A special marker with ID OWN_POSITION_MARKER_ID                         |
-| zoom                | optional | number                     | Desired zoom value of the map. Max is 19. Min is 1.                     |
-| doDebug             | optional | boolean                    | Flag for debug message logging                                          |
-| source              | optional | WebView["source"]          | Loads static html or a uri (with optional headers) in the WebView       |
-| zoomControl         | optional | boolean                    | Controls the visibility of the zoom controls on the map                 |
-| attributionControl  | optional | boolean                    | Controls the visibility of the attribution control on the map           |
-| useMarkerClustering | optional | boolean                    | Enables or disables marker clustering functionality. Default is `true`. |
+| Property            | Required | Type                         | Purpose                                                           |
+| ------------------- | -------- | ---------------------------- | ----------------------------------------------------------------- |
+| onMessageReceived   | optional | function                     | Receives messages as `WebviewLeafletMessage` objects from the map |
+| mapLayers           | optional | `MapLayer[]`                 | An array of map layers                                            |
+| mapMarkers          | optional | `MapMarker[]`                | An array of map markers                                           |
+| mapShapes           | optional | `MapShape[]`                 | An array of map shapes                                            |
+| mapCenterPosition   | optional | `{lat: number, lng: number}` | The center position of the map                                    |
+| ownPositionMarker   | optional | `OwnPositionMarker`          | A special marker with ID `OWN_POSITION_MARKER_ID`                 |
+| zoom                | optional | `number`                     | Desired zoom value of the map (1–19)                              |
+| doDebug             | optional | `boolean`                    | Flag for debug message logging                                    |
+| source              | optional | `WebView["source"]`          | Loads static HTML or a URI in the WebView                         |
+| zoomControl         | optional | `boolean`                    | Controls visibility of the zoom controls on the map               |
+| attributionControl  | optional | `boolean`                    | Controls visibility of the attribution control on the map         |
+| useMarkerClustering | optional | `boolean`                    | Enables or disables marker clustering. Default: `true`            |
 
 ## Credits
 
-- Based on [react-native-leaflet](https://github.com/pavel-corsaghin/react-native-leaflet)
-- Uses [Leaflet](https://leafletjs.com/) for map rendering
+This library is built on top of [react-native-leaflet](https://github.com/pavel-corsaghin/react-native-leaflet) by [@pavel-corsaghin](https://github.com/pavel-corsaghin), which itself is inspired by the original [react-native-leaflet](https://github.com/reggie3/react-native-webview-leaflet) by [@reggie3](https://github.com/reggie3).
+
+Key differences from the base library:
+
+- Added **Web platform** support via `<iframe>` (React Native Web / Expo Web)
+- Full **TypeScript** support with updated type definitions
+- Compatible with **Expo managed workflow** (SDK 50+)
+- Uses platform-specific file resolution (`.native.tsx` / `.web.tsx`)
+
+Map rendering is powered by [Leaflet.js](https://leafletjs.com/).
 
 ## License
 

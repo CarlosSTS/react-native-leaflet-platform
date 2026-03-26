@@ -1,12 +1,12 @@
 import React from 'react';
-import { LeafletView } from '~/components';
+import { LeafletView } from '@carlossts/react-native-leaflet-platform';
 
 const DEFAULT_LOCATION = {
   latitude: -23.5489,
   longitude: -46.6388,
 };
 
-const App = () => {
+const App: React.FC = () => {
   return (
     <LeafletView
       mapCenterPosition={{
