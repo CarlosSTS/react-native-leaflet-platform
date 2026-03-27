@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, View } from 'react-native';
 import { Asset } from 'expo-asset';
 import { File } from 'expo-file-system';
-import { LeafletView } from '@carlossts/react-native-leaflet-platform';
+import { LeafletView, LoadingIndicator } from '@carlossts/react-native-leaflet-platform';
 
 /**
  * Expo (Android/iOS) example.
@@ -47,10 +46,8 @@ const App: React.FC = () => {
 
   if (!webViewContent) {
     return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
+      <LoadingIndicator />
+    )
   }
 
   return (
@@ -63,13 +60,5 @@ const App: React.FC = () => {
     />
   );
 };
-
-const styles = StyleSheet.create({
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;

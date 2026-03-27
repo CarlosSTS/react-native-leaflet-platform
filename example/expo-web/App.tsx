@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, Platform, StyleSheet, View } from 'react-native';
-import { LeafletView } from '@carlossts/react-native-leaflet-platform';
+import { Platform } from 'react-native';
+import { LeafletView, LoadingIndicator } from '@carlossts/react-native-leaflet-platform';
 
 /**
  * Expo with Web support example.
@@ -57,14 +57,11 @@ const App: React.FC = () => {
 
   if (!isWeb && !webViewContent) {
     return (
-      <View style={styles.loading}>
-        <ActivityIndicator size="large" />
-      </View>
+      <LoadingIndicator />
     );
   }
 
   return (
-    <View style={styles.container}>
       <LeafletView
         {...(!isWeb && webViewContent
           ? { source: { html: webViewContent } }
@@ -74,19 +71,7 @@ const App: React.FC = () => {
           lng: DEFAULT_LOCATION.longitude,
         }}
       />
-    </View>
   );
 };
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  loading: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-});
 
 export default App;
