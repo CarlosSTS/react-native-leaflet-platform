@@ -1,0 +1,8 @@
+pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
+plugins { id("com.facebook.react.settings") }
+extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+rootProject.name = 'reactNativeLeafletPlatformExample'
+include ':app'
+include ':react-native-leaflet-platform'
+project(':react-native-leaflet-platform').projectDir = new File(rootProject.projectDir, '../../../android')
+includeBuild('../node_modules/@react-native/gradle-plugin')

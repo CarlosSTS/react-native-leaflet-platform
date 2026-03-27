@@ -1,0 +1,13 @@
+{
+  "extends": "@react-native/typescript-config",
+  "compilerOptions": {
+    "jsx": "react-jsx",
+    "baseUrl": ".",
+    "paths": {
+      "@carlossts/react-native-leaflet-platform": ["../../src/index"],
+      "@carlossts/react-native-leaflet-platform/*": ["../../src/*"]
+    }
+  },
+  "include": ["**/*.ts", "**/*.tsx"],
+  "exclude": ["**/node_modules", "**/Pods"]
+}
