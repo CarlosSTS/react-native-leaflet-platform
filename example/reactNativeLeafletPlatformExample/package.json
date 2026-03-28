@@ -5,22 +5,32 @@
   "scripts": {
     "android": "react-native run-android",
     "ios": "react-native run-ios",
-    "start": "react-native start"
+    "start": "react-native start",
+    "web": "webpack serve --config webpack.config.js",
+    "copy-leaflet-html-web": "sh ../../scripts/copy-leaflet-html.sh"
   },
   "dependencies": {
-    "react": "19.2.3",
+    "react": "19.2.4",
+    "react-dom": "19.2.4",
     "react-native": "0.84.1",
+    "react-native-web": "0.21.2",
     "react-native-webview": "^13.16.1"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
     "@babel/preset-env": "^7.25.3",
     "@babel/runtime": "^7.25.0",
+    "@types/node": "25.5.0",
     "babel-plugin-module-resolver": "^5.0.0",
+    "babel-loader": "10.1.1",
     "escape-string-regexp": "^4.0.0",
+    "html-webpack-plugin": "5.6.6",
     "@react-native-community/cli": "20.1.0",
     "@react-native-community/cli-platform-android": "20.1.0",
     "@react-native-community/cli-platform-ios": "20.1.0",
+    "webpack": "5.105.4",
+    "webpack-cli": "7.0.2",
+    "webpack-dev-server": "5.2.3",
     "@react-native/babel-preset": "0.84.1",
     "@react-native/metro-config": "0.84.1",
     "@react-native/typescript-config": "0.84.1",

@@ -76,3 +76,6 @@ yarn-error.log
 
 # Build output
 lib/
+
+# Generated public folder (leaflet.html copy)
+**/public/leaflet.html

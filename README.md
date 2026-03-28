@@ -33,6 +33,12 @@ yarn add @carlossts/react-native-leaflet-platform
 - **Android/iOS (React Native CLI):**
   - [`react-native-webview`](https://github.com/react-native-webview/react-native-webview)
 
+```sh
+npm install --save react-native-webview
+# or
+yarn add react-native-webview
+```
+
 - **Expo:**
 
   ```sh
@@ -93,6 +99,27 @@ yarn android
 cd ios && pod install && cd ..
 yarn ios
 ```
+
+### Running the Web example
+
+```sh
+# 1. Install root dependencies
+yarn install
+
+# 2. Navigate to the example project
+cd example/reactNativeLeafletPlatformExample
+
+# 3. Install example dependencies
+yarn install
+
+# 4. Copy leaflet.html to the public/ directory
+yarn copy-leaflet-html-web
+
+# 5. Start the web dev server
+yarn web
+```
+
+> The `copy-leaflet-html-web` script creates the `public/` folder (if it doesn't exist) and copies the `leaflet.html` file required for the map to render via `<iframe>` on the web.
 
 > The example project imports the library directly from the source (`../../src`) via Metro and Babel aliases, so any changes to the library code are reflected immediately.
 

@@ -3,6 +3,8 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "baseUrl": ".",
+    "types": [],
+    "lib": ["ESNext", "DOM"],
     "paths": {
       "@carlossts/react-native-leaflet-platform": ["../../src/index"],
       "@carlossts/react-native-leaflet-platform/*": ["../../src/*"]
