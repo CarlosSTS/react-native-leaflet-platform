@@ -39,6 +39,8 @@ npm install --save react-native-webview
 yarn add react-native-webview
 ```
 
+> Tested with `react-native-webview@13.16.1`.
+
 - **Expo:**
 
   ```sh
@@ -145,6 +147,38 @@ yarn web
 | Node.js              | 22.11.0+    | Build/dev only                                  |
 
 > **iOS note:** Apple does not allow alternative browser engines on iOS. The map runs inside a native `WKWebView` via `react-native-webview`. There is no pure web/CSS fallback on iOS — behavior depends on the WebKit engine bundled with the OS version.
+
+## Common Issues
+
+### iOS WebView timeout / map not loading
+
+In some iOS setups, `react-native-webview` can fail during navigation event serialization and the map may appear stuck (timeout behavior while the WebView keeps loading).
+
+If this happens in your app (not only in the example), run the patch script provided by this library:
+
+```json
+{
+  "scripts": {
+    "patch-webview-ios": "sh node_modules/@carlossts/react-native-leaflet-platform/scripts/patch-react-native-webview-ios.sh"
+  }
+}
+```
+
+Then execute:
+
+```sh
+npm run patch-webview-ios
+cd ios && pod install
+```
+
+If you use Yarn:
+
+```sh
+yarn patch-webview-ios
+cd ios && pod install
+```
+
+This workaround is validated with `react-native-webview@13.16.1`.
 
 ## Props
 
