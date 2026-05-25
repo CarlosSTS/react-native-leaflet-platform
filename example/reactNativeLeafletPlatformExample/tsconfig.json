@@ -2,7 +2,6 @@
   "extends": "@react-native/typescript-config",
   "compilerOptions": {
     "jsx": "react-jsx",
-    "baseUrl": ".",
     "types": [],
     "lib": ["ESNext", "DOM"],
     "paths": {

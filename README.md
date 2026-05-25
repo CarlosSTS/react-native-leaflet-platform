@@ -148,6 +148,124 @@ yarn web
 
 > **iOS note:** Apple does not allow alternative browser engines on iOS. The map runs inside a native `WKWebView` via `react-native-webview`. There is no pure web/CSS fallback on iOS — behavior depends on the WebKit engine bundled with the OS version.
 
+## Location permissions (optional)
+
+If your app uses device location (for example, to check the user's position), you must declare the platform permissions.
+
+### Android
+
+Add to your AndroidManifest.xml:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
+<uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+```
+
+### iOS
+
+Add the usage descriptions to Info.plist:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>This app needs your location to show your position on the map.</string>
+```
+
+If you need background location, also include:
+
+```xml
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>This app needs your location even when running in the background.</string>
+```
+
+### Expo (managed)
+
+Add permissions in app.json/app.config.js so they are applied on build:
+
+```json
+{
+  "expo": {
+    "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "This app needs your location to show your position on the map."
+      }
+    },
+    "android": {
+      "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    }
+  }
+}
+```
+
+## Utilities
+
+These helpers are exported from the package and can be used independently.
+
+### `calculateDistance`
+
+Calculates the distance between two coordinates using the Haversine formula.
+
+```ts
+import { calculateDistance } from "@carlossts/react-native-leaflet-platform";
+
+const distanceMeters = calculateDistance(-3.7327, -38.5267, -3.7172, -38.5434);
+```
+
+### `checkLocationPermission`
+
+Checks and requests location permission across platforms (Android, iOS, Web).
+
+Options:
+
+- `showAlert` (boolean): show alert when denied (default: true)
+- `title` (string): custom alert title
+- `message` (string): custom alert message
+- `confirmText` (string): confirm button label
+- `onConfirmPress` (function): callback when user confirms
+- `requestBackground` (boolean): request background location on Android (API 29+)
+
+```ts
+import { checkLocationPermission } from "@carlossts/react-native-leaflet-platform";
+
+const granted = await checkLocationPermission({
+  requestBackground: true,
+  title: "Permission required",
+  message: "Enable location access to show your position on the map.",
+});
+```
+
+### `getOSRMRouteRaw`
+
+Fetches raw route data from the public OSRM service.
+
+```ts
+import { getOSRMRouteRaw } from "@carlossts/react-native-leaflet-platform";
+
+const route = await getOSRMRouteRaw(
+  { lat: -3.7327, lng: -38.5267 },
+  { lat: -3.7172, lng: -38.5434 },
+);
+```
+
+## Props
+
+| Property            | Required | Type                         | Purpose                                                           |
+| ------------------- | -------- | ---------------------------- | ----------------------------------------------------------------- |
+| onMessageReceived   | optional | function                     | Receives messages as `WebviewLeafletMessage` objects from the map |
+| mapLayers           | optional | `MapLayer[]`                 | An array of map layers                                            |
+| mapMarkers          | optional | `MapMarker[]`                | An array of map markers                                           |
+| mapShapes           | optional | `MapShape[]`                 | An array of map shapes                                            |
+| mapCenterPosition   | optional | `{lat: number, lng: number}` | The center position of the map                                    |
+| ownPositionMarker   | optional | `OwnPositionMarker`          | A special marker with ID `OWN_POSITION_MARKER_ID`                 |
+| zoom                | optional | `number`                     | Desired zoom value of the map (1–19)                              |
+| doDebug             | optional | `boolean`                    | Flag for debug message logging                                    |
+| source              | optional | `WebView["source"]`          | Loads static HTML or a URI in the WebView                         |
+| zoomControl         | optional | `boolean`                    | Controls visibility of the zoom controls on the map               |
+| attributionControl  | optional | `boolean`                    | Controls visibility of the attribution control on the map         |
+| useMarkerClustering | optional | `boolean`                    | Enables or disables marker clustering. Default: `true`            |
+| zoomControlStyle    | optional | `string`                     | Custom CSS style string applied to the zoom control container     |
+| zoomInStyle         | optional | `string`                     | Custom CSS style string applied to the zoom-in button             |
+| zoomOutStyle        | optional | `string`                     | Custom CSS style string applied to the zoom-out button            |
+
 ## Common Issues
 
 ### iOS WebView timeout / map not loading
@@ -179,26 +297,6 @@ cd ios && pod install
 ```
 
 This workaround is validated with `react-native-webview@13.16.1`.
-
-## Props
-
-| Property            | Required | Type                         | Purpose                                                           |
-| ------------------- | -------- | ---------------------------- | ----------------------------------------------------------------- |
-| onMessageReceived   | optional | function                     | Receives messages as `WebviewLeafletMessage` objects from the map |
-| mapLayers           | optional | `MapLayer[]`                 | An array of map layers                                            |
-| mapMarkers          | optional | `MapMarker[]`                | An array of map markers                                           |
-| mapShapes           | optional | `MapShape[]`                 | An array of map shapes                                            |
-| mapCenterPosition   | optional | `{lat: number, lng: number}` | The center position of the map                                    |
-| ownPositionMarker   | optional | `OwnPositionMarker`          | A special marker with ID `OWN_POSITION_MARKER_ID`                 |
-| zoom                | optional | `number`                     | Desired zoom value of the map (1–19)                              |
-| doDebug             | optional | `boolean`                    | Flag for debug message logging                                    |
-| source              | optional | `WebView["source"]`          | Loads static HTML or a URI in the WebView                         |
-| zoomControl         | optional | `boolean`                    | Controls visibility of the zoom controls on the map               |
-| attributionControl  | optional | `boolean`                    | Controls visibility of the attribution control on the map         |
-| useMarkerClustering | optional | `boolean`                    | Enables or disables marker clustering. Default: `true`            |
-| zoomControlStyle    | optional | `string`                     | Custom CSS style string applied to the zoom control container     |
-| zoomInStyle         | optional | `string`                     | Custom CSS style string applied to the zoom-in button             |
-| zoomOutStyle        | optional | `string`                     | Custom CSS style string applied to the zoom-out button            |
 
 ## Credits
 
