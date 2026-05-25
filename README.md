@@ -125,6 +125,10 @@ yarn web
 
 > The example project imports the library directly from the source (`../../src`) via Metro and Babel aliases, so any changes to the library code are reflected immediately.
 
+
+### Full example
+> https://github.com/CarlosSTS/react-native-leaflet-platform-demo
+
 ## Supported Platforms
 
 | Platform         | Support | Min Version                                           |
