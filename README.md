@@ -228,6 +228,69 @@ const granted = await checkLocationPermission({
 });
 ```
 
+### Location apps (`getLocationApps` / `navigateWithApp`)
+
+Lists the navigation apps installed on the device (Google Maps, Waze, Uber, …) so you can show them next to a marker and hand the route over to the user's app of choice.
+
+> **Android only.** iOS has no public API to enumerate installed apps, and the browser has no equivalent. On any other platform these functions resolve to `[]` / `false` instead of throwing, so you can call them unconditionally.
+
+No manifest setup is required. Android 11+ (API 30) package visibility hides other apps unless they are declared, so this library ships the matching `<queries>` block and the manifest merger adds it to your app:
+
+```xml
+<queries>
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="geo" />
+  </intent>
+</queries>
+```
+
+It only makes apps that handle `geo:` visible — it is not the `QUERY_ALL_PACKAGES` permission and needs no Play Store declaration. If your app does not use these functions and you want it out of the merged manifest, override it with `tools:node="remove"`.
+
+Also note that unknown packages fall back to `geo:`, which opens the app on the destination but does not start turn-by-turn navigation.
+
+#### `getLocationApps(options?)`
+
+- `includesBase64` (boolean): include the app icon as a PNG data URI (default: false)
+
+Resolves to `{ name, package, icon? }[]`.
+
+#### `buildNavigationUrl({ packageName, destination, label?, navigate? })`
+
+Builds the URL scheme the target app understands (`waze://`, `google.navigation:`, `uber://`), falling back to the standard `geo:` scheme for unknown packages.
+
+- `packageName` (string): target app, usually taken from `getLocationApps`
+- `destination` (`{ lat, lng }`): where to go
+- `label` (string): destination name, when the app supports it
+- `navigate` (boolean): start turn-by-turn navigation instead of only showing the point (default: true)
+
+#### `openAppWithLocation({ url, packageName })`
+
+Opens an already-built URL in a specific app. Rejects if the app is not installed or does not handle the URL.
+
+#### `navigateWithApp({ packageName, destination, label?, navigate? })`
+
+`buildNavigationUrl` + `openAppWithLocation` in one call.
+
+```tsx
+import {
+  getLocationApps,
+  navigateWithApp,
+  type LocationApp,
+} from "@carlossts/react-native-leaflet-platform";
+
+const destination = { lat: -3.7327, lng: -38.5267 };
+
+const apps: LocationApp[] = await getLocationApps({ includesBase64: true });
+
+// Render one button per app, then:
+await navigateWithApp({
+  packageName: apps[0].package,
+  destination,
+  label: "Destination",
+});
+```
+
 ### `getOSRMRouteRaw`
 
 Fetches raw route data from the public OSRM service.
