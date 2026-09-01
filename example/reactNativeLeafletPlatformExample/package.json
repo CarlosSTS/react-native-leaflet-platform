@@ -11,8 +11,8 @@
     "patch-webview-ios": "sh ../../scripts/patch-react-native-webview-ios.sh"
   },
   "dependencies": {
-    "react": "19.2.4",
-    "react-dom": "19.2.4",
+    "react": "19.2.3",
+    "react-dom": "19.2.3",
     "react-native": "0.84.1",
     "react-native-web": "0.21.2",
     "react-native-webview": "13.16.1"

@@ -154,7 +154,7 @@ yarn web
 
 ## Location permissions (optional)
 
-If your app uses device location (for example, to check the user's position), you must declare the platform permissions.
+Location support is limited to **Android** and **Web**. iOS is not supported by this package's location helper — see [`checkLocationPermission`](#checklocationpermission).
 
 ### Android
 
@@ -165,21 +165,15 @@ Add to your AndroidManifest.xml:
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 ```
 
-### iOS
-
-Add the usage descriptions to Info.plist:
+If you need background location (API 29+), also add:
 
 ```xml
-<key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs your location to show your position on the map.</string>
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 ```
 
-If you need background location, also include:
+### Web
 
-```xml
-<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>This app needs your location even when running in the background.</string>
-```
+No manifest setup is needed. The browser prompts for permission on the first request, and the page must be served over HTTPS (or `localhost`).
 
 ### Expo (managed)
 
@@ -188,11 +182,6 @@ Add permissions in app.json/app.config.js so they are applied on build:
 ```json
 {
   "expo": {
-    "ios": {
-      "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app needs your location to show your position on the map."
-      }
-    },
     "android": {
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
     }
@@ -216,7 +205,9 @@ const distanceMeters = calculateDistance(-3.7327, -38.5267, -3.7172, -38.5434);
 
 ### `checkLocationPermission`
 
-Checks and requests location permission across platforms (Android, iOS, Web).
+Checks and requests location permission on **Android** and **Web** only.
+
+> iOS is not supported: the native permission flow cannot be triggered by this API. On iOS (and any other platform) the function always resolves to `false`.
 
 Options:
 
