@@ -39,7 +39,7 @@ npm install --save react-native-webview
 yarn add react-native-webview
 ```
 
-> Tested with `react-native-webview@13.16.1`.
+> Tested with `react-native-webview@14.0.1`.
 
 - **Expo:**
 
