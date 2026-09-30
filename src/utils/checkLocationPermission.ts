@@ -74,23 +74,13 @@ const requestLocationWeb = (): Promise<boolean> => {
 };
 
 /**
- * Request location permission on iOS.
- */
-const requestLocationIOS = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      () => resolve(true),
-      () => resolve(false),
-    );
-  });
-};
-
-/**
- * Checks and requests location permission across platforms.
+ * Checks and requests location permission.
  *
+ * Supported platforms only:
  * - Android: uses PermissionsAndroid
- * - iOS: triggers permission via geolocation
  * - Web: triggers browser permission
+ *
+ * Any other platform (including iOS) is not supported and returns `false`.
  */
 export const checkLocationPermission = async (
   options: PermissionOptions = {},
@@ -102,16 +92,6 @@ export const checkLocationPermission = async (
 
   if (Platform.OS === 'web') {
     const granted = await requestLocationWeb();
-
-    if (!granted && showAlert) {
-      showPermissionAlert(options);
-    }
-
-    return granted;
-  }
-
-  if (Platform.OS === 'ios') {
-    const granted = await requestLocationIOS();
 
     if (!granted && showAlert) {
       showPermissionAlert(options);

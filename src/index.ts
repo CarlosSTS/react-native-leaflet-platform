@@ -5,3 +5,4 @@ export * from './@types/map';
 export * from './utils/calculateDistance';
 export * from './utils/routeDirections';
 export * from './utils/checkLocationPermission';
+export * from './utils/locationApps';
