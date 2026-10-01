@@ -18,6 +18,8 @@ module.exports = {
     rules: [
       {
         test: /\.[jt]sx?$/,
+        include: [__dirname, path.resolve(__dirname, '../../src')],
+        exclude: /node_modules/,
         loader: 'babel-loader',
       },
     ],

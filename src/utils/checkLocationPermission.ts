@@ -1,4 +1,10 @@
-import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
+import {
+  Alert,
+  Linking,
+  NativeModules,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 
 type PermissionOptions = {
   /** Show alert when permission is denied */
@@ -16,8 +22,19 @@ type PermissionOptions = {
   /** Callback when user presses confirm */
   onConfirmPress?: () => void;
 
-  /** Request background location (Android only) */
+  /** Request background location (Android API 29+ and iOS "Always") */
   requestBackground?: boolean;
+};
+
+/** Authorization status resolved by the iOS native module. */
+type IOSLocationStatus = 'granted' | 'always' | 'denied' | 'restricted' | 'disabled';
+
+const nativeModules = NativeModules as {
+  LeafletPlatform?: {
+    requestLocationPermission(options: {
+      requestBackground: boolean;
+    }): Promise<IOSLocationStatus>;
+  };
 };
 
 /**
@@ -74,23 +91,32 @@ const requestLocationWeb = (): Promise<boolean> => {
 };
 
 /**
- * Request location permission on iOS.
+ * Request location permission on iOS through CLLocationManager.
  */
-const requestLocationIOS = (): Promise<boolean> => {
-  return new Promise((resolve) => {
-    navigator.geolocation.getCurrentPosition(
-      () => resolve(true),
-      () => resolve(false),
+const requestLocationIOS = async (requestBackground: boolean): Promise<boolean> => {
+  const nativeModule = nativeModules.LeafletPlatform;
+
+  if (!nativeModule?.requestLocationPermission) {
+    console.warn(
+      '[react-native-leaflet-platform] Native module not linked. Run `pod install` and rebuild the app.',
     );
-  });
+    return false;
+  }
+
+  const status = await nativeModule.requestLocationPermission({ requestBackground });
+
+  return requestBackground ? status === 'always' : status === 'granted' || status === 'always';
 };
 
 /**
- * Checks and requests location permission across platforms.
+ * Checks and requests location permission.
  *
+ * Supported platforms:
  * - Android: uses PermissionsAndroid
- * - iOS: triggers permission via geolocation
+ * - iOS: uses CLLocationManager (requires `NSLocationWhenInUseUsageDescription` in Info.plist)
  * - Web: triggers browser permission
+ *
+ * Any other platform returns `false`.
  */
 export const checkLocationPermission = async (
   options: PermissionOptions = {},
@@ -102,16 +128,6 @@ export const checkLocationPermission = async (
 
   if (Platform.OS === 'web') {
     const granted = await requestLocationWeb();
-
-    if (!granted && showAlert) {
-      showPermissionAlert(options);
-    }
-
-    return granted;
-  }
-
-  if (Platform.OS === 'ios') {
-    const granted = await requestLocationIOS();
 
     if (!granted && showAlert) {
       showPermissionAlert(options);
@@ -146,6 +162,16 @@ export const checkLocationPermission = async (
     }
 
     return true;
+  }
+
+  if (Platform.OS === 'ios') {
+    const granted = await requestLocationIOS(requestBackground);
+
+    if (!granted && showAlert) {
+      showPermissionAlert(options);
+    }
+
+    return granted;
   }
 
   return false;

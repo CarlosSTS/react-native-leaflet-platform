@@ -2,7 +2,7 @@ import { LatLng } from "../@types/map";
 import { OSRMResponse } from "../@types/osrm";
 
 const OSRM_BASE_URL =
-  'http://router.project-osrm.org/route/v1/driving/';
+  'https://router.project-osrm.org/route/v1/driving/';
 
 const DEFAULT_PARAMS = {
   overview: 'full',
