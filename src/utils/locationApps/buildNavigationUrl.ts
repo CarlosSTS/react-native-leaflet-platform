@@ -58,7 +58,9 @@ const buildIOSNavigationUrl = ({
 
 /**
  * Builds the navigation URL for a destination, using the scheme each app
- * understands. Falls back to the standard `geo:` scheme for unknown packages.
+ * understands. When `scheme` is set (iOS), unknown schemes fall back to
+ * `<scheme>://`, which only opens the app. Otherwise (Android), unknown
+ * packages fall back to the standard `geo:` scheme.
  *
  * @example
  * buildNavigationUrl({

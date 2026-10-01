@@ -5,12 +5,13 @@ import { openAppWithLocation } from './openAppWithLocation';
 /**
  * Convenience wrapper that builds the right URL for the app and opens it.
  *
- * **Android only.** On any other platform it resolves to `false`.
+ * On any platform other than Android and iOS it resolves to `false`.
  *
  * @example
  * const [app] = await getLocationApps();
  * await navigateWithApp({
  *   packageName: app.package,
+ *   scheme: app.scheme,
  *   destination: { lat: -3.7327, lng: -38.5267 },
  * });
  */

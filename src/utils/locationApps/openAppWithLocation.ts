@@ -6,7 +6,9 @@ import { nativeModules } from './nativeModule';
 /**
  * Opens an installed app on a given location URL.
  *
- * **Android only.** On any other platform it resolves to `false`.
+ * On Android, `packageName` forces the app that handles the URL. On iOS it is
+ * ignored and the URL scheme decides which app opens. On any other platform
+ * it resolves to `false`.
  *
  * Rejects when the app is not installed or cannot handle the URL.
  *

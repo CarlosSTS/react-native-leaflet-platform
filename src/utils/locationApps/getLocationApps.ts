@@ -25,11 +25,16 @@ const getIOSLocationApps = async ({
  * Lists the installed apps able to handle geographic locations
  * (Google Maps, Waze, Uber, …).
  *
- * **Android only.** On any other platform it resolves to an empty array.
+ * On Android it queries the apps that handle `geo:` URLs. On iOS, which has
+ * no API to list installed apps, it checks `iosApps` with
+ * `Linking.canOpenURL`, so their schemes must be declared in
+ * `LSApplicationQueriesSchemes`. On any other platform it resolves to an
+ * empty array.
  *
  * @example
  * const apps = await getLocationApps({ includesBase64: true });
- * // [{ name: 'Waze', package: 'com.waze', icon: 'data:image/png;base64,…' }]
+ * // Android: [{ name: 'Waze', package: 'com.waze', icon: 'data:image/png;base64,…' }]
+ * // iOS: [{ name: 'Waze', scheme: 'waze' }]
  */
 export const getLocationApps = async ({
   includesBase64 = false,

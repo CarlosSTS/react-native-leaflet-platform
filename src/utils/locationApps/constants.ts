@@ -7,6 +7,7 @@ export const LOCATION_APP_PACKAGES = {
   UBER: 'com.ubercab',
 } as const;
 
+/** Known iOS URL schemes, exported so callers can match apps without hardcoding strings. */
 export const IOS_LOCATION_APP_SCHEMES = {
   APPLE_MAPS: 'maps',
   GOOGLE_MAPS: 'comgooglemaps',
@@ -19,6 +20,7 @@ export const IOS_LOCATION_APP_SCHEMES = {
   MOOVIT: 'moovit',
 } as const;
 
+/** Apps checked by `getLocationApps` on iOS by default. */
 export const IOS_LOCATION_APPS: readonly IOSLocationApp[] = [
   { name: 'Apple Maps', scheme: IOS_LOCATION_APP_SCHEMES.APPLE_MAPS },
   { name: 'Google Maps', scheme: IOS_LOCATION_APP_SCHEMES.GOOGLE_MAPS },
