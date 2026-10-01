@@ -54,7 +54,7 @@ const LeafletView: React.FC<NativeLeafletViewProps> = ({
   userAgent = 'reactNativeLeafletPlatformExample',
   ...rest
 }) => {
-  const webViewRef = useRef<WebView>(null);
+  const webViewRef = useRef<WebView<object>>(null);
   const [initialized, setInitialized] = useState(false);
 
   const logMessage = useCallback(
@@ -216,7 +216,7 @@ const LeafletView: React.FC<NativeLeafletViewProps> = ({
   }, [initialized, zoom, sendMessage]);
 
   return (
-    <WebView
+    <WebView<object>
       {...rest}
       containerStyle={styles.container}
       ref={webViewRef}

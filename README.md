@@ -39,7 +39,7 @@ npm install --save react-native-webview
 yarn add react-native-webview
 ```
 
-> Tested with `react-native-webview@13.16.1`.
+> Tested with `react-native-webview@14.0.1`.
 
 - **Expo:**
 
@@ -154,7 +154,7 @@ yarn web
 
 ## Location permissions (optional)
 
-If your app uses device location (for example, to check the user's position), you must declare the platform permissions.
+Location permission is supported on **Android**, **iOS** and **Web** — see [`checkLocationPermission`](#checklocationpermission).
 
 ### Android
 
@@ -165,21 +165,35 @@ Add to your AndroidManifest.xml:
 <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 ```
 
+If you need background location (API 29+), also add:
+
+```xml
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
+```
+
 ### iOS
 
-Add the usage descriptions to Info.plist:
+Add to your `Info.plist`:
 
 ```xml
 <key>NSLocationWhenInUseUsageDescription</key>
-<string>This app needs your location to show your position on the map.</string>
+<string>Your location is used to show where you are on the map.</string>
 ```
 
-If you need background location, also include:
+If you use `requestBackground`, also add:
 
 ```xml
 <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-<string>This app needs your location even when running in the background.</string>
+<string>Your location is used to show where you are on the map.</string>
 ```
+
+Then run `cd ios && pod install`. Without the usage description, `checkLocationPermission` rejects with `E_MISSING_USAGE_DESCRIPTION`.
+
+> Once `NSLocationWhenInUseUsageDescription` is present, any `navigator.geolocation` call inside the map WebView also triggers the iOS location prompt.
+
+### Web
+
+No manifest setup is needed. The browser prompts for permission on the first request, and the page must be served over HTTPS (or `localhost`).
 
 ### Expo (managed)
 
@@ -188,13 +202,13 @@ Add permissions in app.json/app.config.js so they are applied on build:
 ```json
 {
   "expo": {
-    "ios": {
-      "infoPlist": {
-        "NSLocationWhenInUseUsageDescription": "This app needs your location to show your position on the map."
-      }
-    },
     "android": {
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Your location is used to show where you are on the map."
+      }
     }
   }
 }
@@ -216,7 +230,9 @@ const distanceMeters = calculateDistance(-3.7327, -38.5267, -3.7172, -38.5434);
 
 ### `checkLocationPermission`
 
-Checks and requests location permission across platforms (Android, iOS, Web).
+Checks and requests location permission on **Android**, **iOS** and **Web**. Resolves to `true` when access is granted.
+
+> iOS only shows the system prompt once. After the user denies it, the function resolves to `false` and (with `showAlert`) offers to open Settings.
 
 Options:
 
@@ -225,7 +241,7 @@ Options:
 - `message` (string): custom alert message
 - `confirmText` (string): confirm button label
 - `onConfirmPress` (function): callback when user confirms
-- `requestBackground` (boolean): request background location on Android (API 29+)
+- `requestBackground` (boolean): request background location on Android (API 29+) or "Always" on iOS
 
 ```ts
 import { checkLocationPermission } from "@carlossts/react-native-leaflet-platform";
@@ -234,6 +250,69 @@ const granted = await checkLocationPermission({
   requestBackground: true,
   title: "Permission required",
   message: "Enable location access to show your position on the map.",
+});
+```
+
+### Location apps (`getLocationApps` / `navigateWithApp`)
+
+Lists the navigation apps installed on the device (Google Maps, Waze, Uber, …) so you can show them next to a marker and hand the route over to the user's app of choice.
+
+> **Android only.** iOS has no public API to enumerate installed apps, and the browser has no equivalent. On any other platform these functions resolve to `[]` / `false` instead of throwing, so you can call them unconditionally.
+
+No manifest setup is required. Android 11+ (API 30) package visibility hides other apps unless they are declared, so this library ships the matching `<queries>` block and the manifest merger adds it to your app:
+
+```xml
+<queries>
+  <intent>
+    <action android:name="android.intent.action.VIEW" />
+    <data android:scheme="geo" />
+  </intent>
+</queries>
+```
+
+It only makes apps that handle `geo:` visible — it is not the `QUERY_ALL_PACKAGES` permission and needs no Play Store declaration. If your app does not use these functions and you want it out of the merged manifest, override it with `tools:node="remove"`.
+
+Also note that unknown packages fall back to `geo:`, which opens the app on the destination but does not start turn-by-turn navigation.
+
+#### `getLocationApps(options?)`
+
+- `includesBase64` (boolean): include the app icon as a PNG data URI (default: false)
+
+Resolves to `{ name, package, icon? }[]`.
+
+#### `buildNavigationUrl({ packageName, destination, label?, navigate? })`
+
+Builds the URL scheme the target app understands (`waze://`, `google.navigation:`, `uber://`), falling back to the standard `geo:` scheme for unknown packages.
+
+- `packageName` (string): target app, usually taken from `getLocationApps`
+- `destination` (`{ lat, lng }`): where to go
+- `label` (string): destination name, when the app supports it
+- `navigate` (boolean): start turn-by-turn navigation instead of only showing the point (default: true)
+
+#### `openAppWithLocation({ url, packageName })`
+
+Opens an already-built URL in a specific app. Rejects if the app is not installed or does not handle the URL.
+
+#### `navigateWithApp({ packageName, destination, label?, navigate? })`
+
+`buildNavigationUrl` + `openAppWithLocation` in one call.
+
+```tsx
+import {
+  getLocationApps,
+  navigateWithApp,
+  type LocationApp,
+} from "@carlossts/react-native-leaflet-platform";
+
+const destination = { lat: -3.7327, lng: -38.5267 };
+
+const apps: LocationApp[] = await getLocationApps({ includesBase64: true });
+
+// Render one button per app, then:
+await navigateWithApp({
+  packageName: apps[0].package,
+  destination,
+  label: "Destination",
 });
 ```
 
@@ -273,6 +352,8 @@ const route = await getOSRMRouteRaw(
 ## Common Issues
 
 ### iOS WebView timeout / map not loading
+
+> **Note:** This patch is **not required** with `react-native-webview@14` or newer — the map loads normally on iOS without it (tested with `react-native-webview@14.0.1` and React Native 0.87.1). Only apply it if you are on `react-native-webview@13.x` and the map gets stuck loading.
 
 In some iOS setups, `react-native-webview` can fail during navigation event serialization and the map may appear stuck (timeout behavior while the WebView keeps loading).
 
