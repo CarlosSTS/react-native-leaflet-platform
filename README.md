@@ -257,7 +257,9 @@ const granted = await checkLocationPermission({
 
 Lists the navigation apps installed on the device (Google Maps, Waze, Uber, …) so you can show them next to a marker and hand the route over to the user's app of choice.
 
-> **Android only.** iOS has no public API to enumerate installed apps, and the browser has no equivalent. On any other platform these functions resolve to `[]` / `false` instead of throwing, so you can call them unconditionally.
+> These functions work on Android and iOS. On any other platform they resolve to `[]` / `false` instead of throwing, so you can call them unconditionally.
+
+#### Android
 
 No manifest setup is required. Android 11+ (API 30) package visibility hides other apps unless they are declared, so this library ships the matching `<queries>` block and the manifest merger adds it to your app:
 
@@ -274,26 +276,84 @@ It only makes apps that handle `geo:` visible — it is not the `QUERY_ALL_PACKA
 
 Also note that unknown packages fall back to `geo:`, which opens the app on the destination but does not start turn-by-turn navigation.
 
+#### iOS
+
+iOS has no public API to enumerate installed apps. Instead, `getLocationApps` checks a list of known apps with `Linking.canOpenURL`. By default it checks `IOS_LOCATION_APPS`:
+
+| App         | Scheme          |
+| ----------- | --------------- |
+| Apple Maps  | `maps`          |
+| Google Maps | `comgooglemaps` |
+| Waze        | `waze`          |
+| Uber        | `uber`          |
+| 99          | `taxis99`       |
+| Cabify      | `cabify`        |
+| Lyft        | `lyft`          |
+| Citymapper  | `citymapper`    |
+| Moovit      | `moovit`        |
+
+`canOpenURL` returns `false` for any scheme not declared in your app's `Info.plist`, even when the app is installed. Add every scheme you want to detect (at most 50):
+
+```xml
+<key>LSApplicationQueriesSchemes</key>
+<array>
+  <string>maps</string>
+  <string>comgooglemaps</string>
+  <string>waze</string>
+  <string>uber</string>
+  <string>taxis99</string>
+  <string>cabify</string>
+  <string>lyft</string>
+  <string>citymapper</string>
+  <string>moovit</string>
+</array>
+```
+
+With Expo, add the same list under `expo.ios.infoPlist.LSApplicationQueriesSchemes` in `app.json`.
+
+> **No icons on iOS.** iOS does not expose other apps' icons, and this library does not ship icon assets, so `includesBase64` is ignored and `icon` is never set. Map each `scheme` to an icon in your own app if you need one.
+
+To check other apps, pass your own list. Remember to declare the extra schemes in `Info.plist` too:
+
+```ts
+import {
+  getLocationApps,
+  IOS_LOCATION_APPS,
+} from "@carlossts/react-native-leaflet-platform";
+
+const apps = await getLocationApps({
+  iosApps: [...IOS_LOCATION_APPS, { name: "My App", scheme: "myapp" }],
+});
+```
+
 #### `getLocationApps(options?)`
 
-- `includesBase64` (boolean): include the app icon as a PNG data URI (default: false)
+- `includesBase64` (boolean): include the app icon as a PNG data URI (default: false, Android only)
+- `iosApps` (`{ name, scheme }[]`): apps to check on iOS (default: `IOS_LOCATION_APPS`)
 
-Resolves to `{ name, package, icon? }[]`.
+Resolves to `{ name, package?, scheme?, icon? }[]`. `package` and `icon` are filled on Android, `scheme` on iOS.
 
-#### `buildNavigationUrl({ packageName, destination, label?, navigate? })`
+#### `buildNavigationUrl({ packageName?, scheme?, destination, label?, navigate? })`
 
-Builds the URL scheme the target app understands (`waze://`, `google.navigation:`, `uber://`), falling back to the standard `geo:` scheme for unknown packages.
+Builds the URL the target app understands. Pass the `package` (Android) or `scheme` (iOS) returned by `getLocationApps`.
 
-- `packageName` (string): target app, usually taken from `getLocationApps`
+- Android: `waze://`, `google.navigation:`, `uber://`, falling back to the standard `geo:` scheme for unknown packages.
+- iOS: `maps://`, `comgooglemaps://`, `waze://`, `uber://`, `lyft://`, `citymapper://`, `moovit://`. Other schemes (99, Cabify, custom apps) fall back to `<scheme>://`, which only opens the app.
+
+- `packageName` (string): target app on Android
+- `scheme` (string): target app on iOS. Takes precedence over `packageName`
 - `destination` (`{ lat, lng }`): where to go
 - `label` (string): destination name, when the app supports it
 - `navigate` (boolean): start turn-by-turn navigation instead of only showing the point (default: true)
 
-#### `openAppWithLocation({ url, packageName })`
+#### `openAppWithLocation({ url, packageName? })`
 
 Opens an already-built URL in a specific app. Rejects if the app is not installed or does not handle the URL.
 
-#### `navigateWithApp({ packageName, destination, label?, navigate? })`
+- Android: `packageName` is required and forces the app that handles the URL.
+- iOS: `packageName` is ignored. The URL scheme decides which app opens, through `Linking.openURL`. Opening does not require `LSApplicationQueriesSchemes`.
+
+#### `navigateWithApp({ packageName?, scheme?, destination, label?, navigate? })`
 
 `buildNavigationUrl` + `openAppWithLocation` in one call.
 
@@ -309,11 +369,16 @@ const destination = { lat: -3.7327, lng: -38.5267 };
 const apps: LocationApp[] = await getLocationApps({ includesBase64: true });
 
 // Render one button per app, then:
-await navigateWithApp({
-  packageName: apps[0].package,
-  destination,
-  label: "Destination",
-});
+const [app] = apps;
+
+if (app) {
+  await navigateWithApp({
+    packageName: app.package,
+    scheme: app.scheme,
+    destination,
+    label: "Destination",
+  });
+}
 ```
 
 ### `getOSRMRouteRaw`
