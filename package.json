@@ -1,6 +1,6 @@
 {
   "name": "@carlossts/react-native-leaflet-platform",
-  "version": "1.0.10",
+  "version": "1.1.0",
   "publishConfig": {
     "access": "public"
   },
