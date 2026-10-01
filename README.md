@@ -328,6 +328,8 @@ const route = await getOSRMRouteRaw(
 
 ### iOS WebView timeout / map not loading
 
+> **Note:** This patch is **not required** with `react-native-webview@14` or newer — the map loads normally on iOS without it (tested with `react-native-webview@14.0.1` and React Native 0.87.1). Only apply it if you are on `react-native-webview@13.x` and the map gets stuck loading.
+
 In some iOS setups, `react-native-webview` can fail during navigation event serialization and the map may appear stuck (timeout behavior while the WebView keeps loading).
 
 If this happens in your app (not only in the example), run the patch script provided by this library:
