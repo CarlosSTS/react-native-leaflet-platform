@@ -154,7 +154,7 @@ yarn web
 
 ## Location permissions (optional)
 
-Location support is limited to **Android** and **Web**. iOS is not supported by this package's location helper — see [`checkLocationPermission`](#checklocationpermission).
+Location permission is supported on **Android**, **iOS** and **Web** — see [`checkLocationPermission`](#checklocationpermission).
 
 ### Android
 
@@ -171,6 +171,26 @@ If you need background location (API 29+), also add:
 <uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" />
 ```
 
+### iOS
+
+Add to your `Info.plist`:
+
+```xml
+<key>NSLocationWhenInUseUsageDescription</key>
+<string>Your location is used to show where you are on the map.</string>
+```
+
+If you use `requestBackground`, also add:
+
+```xml
+<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+<string>Your location is used to show where you are on the map.</string>
+```
+
+Then run `cd ios && pod install`. Without the usage description, `checkLocationPermission` rejects with `E_MISSING_USAGE_DESCRIPTION`.
+
+> Once `NSLocationWhenInUseUsageDescription` is present, any `navigator.geolocation` call inside the map WebView also triggers the iOS location prompt.
+
 ### Web
 
 No manifest setup is needed. The browser prompts for permission on the first request, and the page must be served over HTTPS (or `localhost`).
@@ -184,6 +204,11 @@ Add permissions in app.json/app.config.js so they are applied on build:
   "expo": {
     "android": {
       "permissions": ["ACCESS_FINE_LOCATION", "ACCESS_COARSE_LOCATION"]
+    },
+    "ios": {
+      "infoPlist": {
+        "NSLocationWhenInUseUsageDescription": "Your location is used to show where you are on the map."
+      }
     }
   }
 }
@@ -205,9 +230,9 @@ const distanceMeters = calculateDistance(-3.7327, -38.5267, -3.7172, -38.5434);
 
 ### `checkLocationPermission`
 
-Checks and requests location permission on **Android** and **Web** only.
+Checks and requests location permission on **Android**, **iOS** and **Web**. Resolves to `true` when access is granted.
 
-> iOS is not supported: the native permission flow cannot be triggered by this API. On iOS (and any other platform) the function always resolves to `false`.
+> iOS only shows the system prompt once. After the user denies it, the function resolves to `false` and (with `showAlert`) offers to open Settings.
 
 Options:
 
@@ -216,7 +241,7 @@ Options:
 - `message` (string): custom alert message
 - `confirmText` (string): confirm button label
 - `onConfirmPress` (function): callback when user confirms
-- `requestBackground` (boolean): request background location on Android (API 29+)
+- `requestBackground` (boolean): request background location on Android (API 29+) or "Always" on iOS
 
 ```ts
 import { checkLocationPermission } from "@carlossts/react-native-leaflet-platform";

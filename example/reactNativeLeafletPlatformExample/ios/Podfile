@@ -17,6 +17,9 @@ end
 target 'reactNativeLeafletPlatformExample' do
   config = use_native_modules!
 
+  # Links this repository's library (the example consumes it from source).
+  pod 'react-native-leaflet-platform', :path => '../../..'
+
   use_react_native!(
     :path => config[:reactNativePath],
     # An absolute path to your application root.

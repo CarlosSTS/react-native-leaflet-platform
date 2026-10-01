@@ -1246,6 +1246,8 @@ PODS:
     - ReactCommon/turbomodule/core
     - ReactNativeDependencies
     - Yoga
+  - react-native-leaflet-platform (1.0.10):
+    - React-Core
   - react-native-webview (14.0.1):
     - hermes-engine
     - RCTRequired
@@ -1680,6 +1682,7 @@ DEPENDENCIES:
   - React-Mapbuffer (from `../node_modules/react-native/ReactCommon`)
   - React-microtasksnativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/microtasks`)
   - React-mutationobservernativemodule (from `../node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver`)
+  - react-native-leaflet-platform (from `../../..`)
   - react-native-webview (from `../node_modules/react-native-webview`)
   - React-NativeModulesApple (from `../node_modules/react-native/ReactCommon/react/nativemodule/core/platform/ios`)
   - React-networking (from `../node_modules/react-native/ReactCommon/react/networking`)
@@ -1816,6 +1819,8 @@ EXTERNAL SOURCES:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/microtasks"
   React-mutationobservernativemodule:
     :path: "../node_modules/react-native/ReactCommon/react/nativemodule/mutationobserver"
+  react-native-leaflet-platform:
+    :path: "../../.."
   react-native-webview:
     :path: "../node_modules/react-native-webview"
   React-NativeModulesApple:
@@ -1943,6 +1948,7 @@ SPEC CHECKSUMS:
   React-Mapbuffer: fedd8e34e26194cf70bd66e77c49170e22d88b82
   React-microtasksnativemodule: aa3ea1db91e208694042bd8af0bda65202f4a68d
   React-mutationobservernativemodule: 2dcf0e333fe6621c3ffea838fcc48d54435724a1
+  react-native-leaflet-platform: 28327efa1c4edaf3902e67c64c81791e7114604b
   react-native-webview: 3e750a1f0c41f792a219131b9ddab41d04cfdd8b
   React-NativeModulesApple: 885f4cd7626a1ffe20e0dcd23ef8528f415795d3
   React-networking: 31c21d3a8ea93c859706f876d27578782b05d250
@@ -1983,6 +1989,6 @@ SPEC CHECKSUMS:
   SocketRocket: d57b1af80c029e12a75cd9b218287c67381e4593
   Yoga: 58b502c52b14ad3c4468805d461fc37d275c2a42
 
-PODFILE CHECKSUM: 8693947969e2afe70e002e18b432f82f034d9290
+PODFILE CHECKSUM: fa348eb49b8d795e7165424cf309f9e1170ef695
 
 COCOAPODS: 1.16.2

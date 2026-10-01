@@ -1,4 +1,10 @@
-import { Alert, Linking, PermissionsAndroid, Platform } from 'react-native';
+import {
+  Alert,
+  Linking,
+  NativeModules,
+  PermissionsAndroid,
+  Platform,
+} from 'react-native';
 
 type PermissionOptions = {
   /** Show alert when permission is denied */
@@ -16,8 +22,19 @@ type PermissionOptions = {
   /** Callback when user presses confirm */
   onConfirmPress?: () => void;
 
-  /** Request background location (Android only) */
+  /** Request background location (Android API 29+ and iOS "Always") */
   requestBackground?: boolean;
+};
+
+/** Authorization status resolved by the iOS native module. */
+type IOSLocationStatus = 'granted' | 'always' | 'denied' | 'restricted' | 'disabled';
+
+const nativeModules = NativeModules as {
+  LeafletPlatform?: {
+    requestLocationPermission(options: {
+      requestBackground: boolean;
+    }): Promise<IOSLocationStatus>;
+  };
 };
 
 /**
@@ -74,13 +91,32 @@ const requestLocationWeb = (): Promise<boolean> => {
 };
 
 /**
+ * Request location permission on iOS through CLLocationManager.
+ */
+const requestLocationIOS = async (requestBackground: boolean): Promise<boolean> => {
+  const nativeModule = nativeModules.LeafletPlatform;
+
+  if (!nativeModule?.requestLocationPermission) {
+    console.warn(
+      '[react-native-leaflet-platform] Native module not linked. Run `pod install` and rebuild the app.',
+    );
+    return false;
+  }
+
+  const status = await nativeModule.requestLocationPermission({ requestBackground });
+
+  return requestBackground ? status === 'always' : status === 'granted' || status === 'always';
+};
+
+/**
  * Checks and requests location permission.
  *
- * Supported platforms only:
+ * Supported platforms:
  * - Android: uses PermissionsAndroid
+ * - iOS: uses CLLocationManager (requires `NSLocationWhenInUseUsageDescription` in Info.plist)
  * - Web: triggers browser permission
  *
- * Any other platform (including iOS) is not supported and returns `false`.
+ * Any other platform returns `false`.
  */
 export const checkLocationPermission = async (
   options: PermissionOptions = {},
@@ -126,6 +162,16 @@ export const checkLocationPermission = async (
     }
 
     return true;
+  }
+
+  if (Platform.OS === 'ios') {
+    const granted = await requestLocationIOS(requestBackground);
+
+    if (!granted && showAlert) {
+      showPermissionAlert(options);
+    }
+
+    return granted;
   }
 
   return false;
